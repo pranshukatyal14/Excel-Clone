@@ -29,7 +29,7 @@ for (let j = 1; j <= 100; j++) {
 for (let i = 1; i <= 100; i++) {
     let row = $(`<div class="cell-row"></div>`)
     for (let j = 1; j <= 100; j++) {
-        row.append(`<div id="row-${i}-col-${j}" class="input-cell" >`)
+        row.append(`<div id="row-${i}-col-${j}" class="input-cell" contenteditable="false">`)
     }
     $("#cells").append(row);
 }
@@ -71,7 +71,7 @@ $(".input-cell").click(function (e) {
 });
 
 function unselectCell(ele,e,topCell,bottomCell,leftCell,rightCell){
-    if(e.shiftKey){
+    if(e.shiftKey && $(ele).attr("contenteditable")=="false"){
         if($(ele).hasClass("top-selected")){
             topCell.removeClass("bottom-selected");
         }
@@ -140,5 +140,18 @@ function selectCell(ele, e, topCell, bottomCell, leftCell, rightCell) {
     $(ele).addClass("selected");
 }
 
+let mousemoved=false;
+let startCellStored=false;
+$(".input-cell").mousemove(function(event){
+    if(event.buttons==1 && !startCellStored){
+        startCellStored=true;
+        mousemoved=true;
+        console.log(event.target,event.buttons);
+    }else if(event.buttons==0 && mousemoved){
+        startCellStored=false;
+        mousemoved=false;
+        console.log(event.target,event.bottons)
+    }
+})
 
 
