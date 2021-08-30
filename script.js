@@ -3,6 +3,17 @@ const PS = new PerfectScrollbar("#cells", {
     wheelPropogation: true
 });
 
+function findRowCol(ele){
+    let idArray = $(ele).attr("id").split("-");
+      
+    //  let rowId=$(this).attr("id").split("-")[1];
+    // let colId=$(this).attr("id").split("-")[3];
+
+    let rowId = parseInt(idArray[1]);
+    let colId = parseInt(idArray[3]);
+    return [rowId,colId];
+}
+
 for (let i = 1; i <= 100; i++) {
     let str = "";
     let n = i;
@@ -49,17 +60,18 @@ $(".input-cell").blur(function () {
     $(this).attr("contenteditable", "false");
 });
 
-$(".input-cell").click(function (e) {
-    let idArray = $(this).attr("id").split("-");
-    let rowId = parseInt(idArray[1]);
-    let colId = parseInt(idArray[3]);
-    //  let rowId=$(this).attr("id").split("-")[1];
-    // let colId=$(this).attr("id").split("-")[3];
-
+function getTopBottomLeftRightCell(rowId,colId){
     let topCell = $(`#row-${rowId - 1}-col-${colId}`);
     let bottomCell = $(`#row-${rowId + 1}-col-${colId}`);
     let leftCell = $(`#row-${rowId}-col-${colId - 1}`);
     let rightCell = $(`#row-${rowId}-col-${colId + 1}`);
+    return[topCell,bottomCell,leftCell,rightCell];
+}
+
+$(".input-cell").click(function(e) {
+ 
+   let[rowId,colId]=findRowCol(this);
+   let[topCell,bottomCell,leftCell,rightCell]=getTopBottomLeftRightCell(rowId,colId);
 
 
     if ($(this).hasClass("selected")) {
@@ -89,14 +101,8 @@ function unselectCell(ele,e,topCell,bottomCell,leftCell,rightCell){
     }
 }
 
-function selectCell(ele, e, topCell, bottomCell, leftCell, rightCell) {
-    if (e.shiftKey) {
-        let idArray = $(ele).attr("id").split("-");
-        let rowId = parseInt(idArray[1]);
-        let colId = parseInt(idArray[3]);
-        //  let rowId=$(this).attr("id").split("-")[1];
-        // let colId=$(this).attr("id").split("-")[3];
-
+function selectCell(ele, e, topCell, bottomCell, leftCell, rightCell,mouseSelection) {
+    if(e.shiftKey || mouseSelection){
         //TOP SELECTED OR NOT
         let topSelected;
         if(topCell){
@@ -142,16 +148,33 @@ function selectCell(ele, e, topCell, bottomCell, leftCell, rightCell) {
 
 let mousemoved=false;
 let startCellStored=false;
+let startCell;
+let endCell;
+
 $(".input-cell").mousemove(function(event){
     if(event.buttons==1 && !startCellStored){
+        $(".input-cell.selected").removeClass("selected top-selected bottom-selected right-selected left-selected");
         startCellStored=true;
         mousemoved=true;
-        console.log(event.target,event.buttons);
+        let[rowId,colId]=findRowCol(event.target);
+        startCell={rowId:rowId,colId:colId};
     }else if(event.buttons==0 && mousemoved){
         startCellStored=false;
         mousemoved=false;
-        console.log(event.target,event.bottons)
+       let [rowId,colId]=findRowCol(event.target);
+       endCell={rowId:rowId,colId:colId};
+       selectAllBetweenRange(startCell,endCell);
     }
-})
+});
+
+function selectAllBetweenRange(start,end){
+    for(let i=start.rowId;i<=end.rowId;i++){
+        for(let j=start.colId;j<=end.colId;j++){
+            let [topCell,bottomCell,leftCell,rightCell]=getTopBottomLeftRightCell(i,j);
+            selectCell($(`#row-${i}-col-${j}`)[0],{},topCell,bottomCell,leftCell,rightCell,true);
+        }
+
+    }
+}
 
 
