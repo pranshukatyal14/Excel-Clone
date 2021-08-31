@@ -3,15 +3,15 @@ const PS = new PerfectScrollbar("#cells", {
     wheelPropogation: true
 });
 
-function findRowCol(ele){
+function findRowCol(ele) {
     let idArray = $(ele).attr("id").split("-");
-      
+
     //  let rowId=$(this).attr("id").split("-")[1];
     // let colId=$(this).attr("id").split("-")[3];
 
     let rowId = parseInt(idArray[1]);
     let colId = parseInt(idArray[3]);
-    return [rowId,colId];
+    return [rowId, colId];
 }
 
 for (let i = 1; i <= 100; i++) {
@@ -60,21 +60,21 @@ $(".input-cell").blur(function () {
     $(this).attr("contenteditable", "false");
 });
 
-function getTopBottomLeftRightCell(rowId,colId){
+function getTopBottomLeftRightCell(rowId, colId) {
     let topCell = $(`#row-${rowId - 1}-col-${colId}`);
     let bottomCell = $(`#row-${rowId + 1}-col-${colId}`);
     let leftCell = $(`#row-${rowId}-col-${colId - 1}`);
     let rightCell = $(`#row-${rowId}-col-${colId + 1}`);
-    return[topCell,bottomCell,leftCell,rightCell];
+    return [topCell, bottomCell, leftCell, rightCell];
 }
 
-$(".input-cell").click(function(e) {
- 
-   let[rowId,colId]=findRowCol(this);
-   let[topCell,bottomCell,leftCell,rightCell]=getTopBottomLeftRightCell(rowId,colId);
+$(".input-cell").click(function (e) {
+
+    let [rowId, colId] = findRowCol(this);
+    let [topCell, bottomCell, leftCell, rightCell] = getTopBottomLeftRightCell(rowId, colId);
 
 
-    if ($(this).hasClass("selected")) {
+    if ($(this).hasClass("selected") && e.shiftKey) {
         unselectCell(this, e, topCell, bottomCell, leftCell, rightCell);
     } else {
         selectCell(this, e, topCell, bottomCell, leftCell, rightCell);
@@ -82,99 +82,144 @@ $(".input-cell").click(function(e) {
 
 });
 
-function unselectCell(ele,e,topCell,bottomCell,leftCell,rightCell){
-    if(e.shiftKey && $(ele).attr("contenteditable")=="false"){
-        if($(ele).hasClass("top-selected")){
+function unselectCell(ele, e, topCell, bottomCell, leftCell, rightCell) {
+    if (e.shiftKey && $(ele).attr("contenteditable") == "false") {
+        if ($(ele).hasClass("top-selected")) {
             topCell.removeClass("bottom-selected");
         }
-        if($(ele).hasClass("left-selected")){
+        if ($(ele).hasClass("left-selected")) {
             leftCell.removeClass("right-selected");
 
         }
-        if($(ele).hasClass("right-selected")){
+        if ($(ele).hasClass("right-selected")) {
             rightCell.removeClass("left-selected");
         }
-        if($(ele).hasClass("bottom-selected")){
+        if ($(ele).hasClass("bottom-selected")) {
             bottomCell.removeClass("top-selected");
         }
         $(ele).removeClass("selected top-selected bottom-selected right-selected left-selected");
     }
 }
 
-function selectCell(ele, e, topCell, bottomCell, leftCell, rightCell,mouseSelection) {
-    if(e.shiftKey || mouseSelection){
+function selectCell(ele, e, topCell, bottomCell, leftCell, rightCell, mouseSelection) {
+    if (e.shiftKey || mouseSelection) {
         //TOP SELECTED OR NOT
         let topSelected;
-        if(topCell){
-            topSelected=topCell.hasClass("selected");
+        if (topCell) {
+            topSelected = topCell.hasClass("selected");
         }
         // BOTTOM SELECTED OR NOT
         let bottomSelected;
-        if(bottomCell){
-            bottomSelected=bottomCell.hasClass("selected");
+        if (bottomCell) {
+            bottomSelected = bottomCell.hasClass("selected");
         }
         //LEFT SELECTED OR NOT
         let leftSelected;
-        if(leftCell){
-            leftSelected=leftCell.hasClass("selected");
+        if (leftCell) {
+            leftSelected = leftCell.hasClass("selected");
         }
         // RIGHT SELECTED OR NOT
         let rightSelected;
-        if(rightCell){
-            rightSelected=rightCell.hasClass("selected");
+        if (rightCell) {
+            rightSelected = rightCell.hasClass("selected");
         }
 
-        if(topSelected){
+        if (topSelected) {
             topCell.addClass("bottom-selected");
             $(ele).addClass("top-selected");
         }
-        if(leftSelected){
+        if (leftSelected) {
             leftCell.addClass("right-selected");
             $(ele).addClass("left-selected");
         }
-        if(rightSelected){
+        if (rightSelected) {
             rightCell.addClass("left-selected");
             $(ele).addClass("right-selected");
         }
-        if(bottomSelected){
+        if (bottomSelected) {
             bottomCell.addClass("top-selected");
             $(ele).addClass("bottom-selected");
         }
-    }else{
+    } else {
         $(".input-cell.selected").removeClass("selected top-selected bottom-selected left-selected right-selected")
     }
     $(ele).addClass("selected");
 }
 
-let mousemoved=false;
-let startCellStored=false;
+let mousemoved = false;
+let startCellStored = false;
 let startCell;
 let endCell;
 
-$(".input-cell").mousemove(function(event){
-    if(event.buttons==1 && !startCellStored){
+$(".input-cell").mousemove(function (event) {
+    event.preventDefault();// stops the bydefault work
+    if (event.buttons == 1 && !event.shiftKey) {
         $(".input-cell.selected").removeClass("selected top-selected bottom-selected right-selected left-selected");
-        startCellStored=true;
-        mousemoved=true;
-        let[rowId,colId]=findRowCol(event.target);
-        startCell={rowId:rowId,colId:colId};
-    }else if(event.buttons==0 && mousemoved){
-        startCellStored=false;
-        mousemoved=false;
-       let [rowId,colId]=findRowCol(event.target);
-       endCell={rowId:rowId,colId:colId};
-       selectAllBetweenRange(startCell,endCell);
+
+        mousemoved = true;
+        if (!startCellStored) {
+            let [rowId, colId] = findRowCol(event.target);
+            startCell = { rowId: rowId, colId: colId };
+            startCellStored = true;
+
+        } else {
+            let { rowId, colId } = findRowCol(event.target);
+            endCell = { rowId: rowId, colId: colId };
+            selectAllBetweenRange(startCell, endCell);
+        }
+
+
+    } else if (event.buttons == 0 && mousemoved) {
+        startCellStored = false;
+        mousemoved = false;
+        let [rowId, colId] = findRowCol(event.target);
+        endCell = { rowId: rowId, colId: colId };
+        selectAllBetweenRange(startCell, endCell);
     }
 });
 
-function selectAllBetweenRange(start,end){
-    for(let i=start.rowId;i<=end.rowId;i++){
-        for(let j=start.colId;j<=end.colId;j++){
-            let [topCell,bottomCell,leftCell,rightCell]=getTopBottomLeftRightCell(i,j);
-            selectCell($(`#row-${i}-col-${j}`)[0],{},topCell,bottomCell,leftCell,rightCell,true);
+function selectAllBetweenRange(start, end) {
+    for (let i = (start.rowId < end.rowId ? start.rowId : end.rowId); i <= (start.rowId < end.rowId ? end.rowId : start.rowId); i++) {
+        for (let j = (start.colId < end.colId ? start.colId : end.colId); j <= (start.colId < end.colId ? end.colId : start.colId); j++) {
+            let [topCell, bottomCell, leftCell, rightCell] = getTopBottomLeftRightCell(i, j);
+            selectCell($(`#row-${i}-col-${j}`)[0], {}, topCell, bottomCell, leftCell, rightCell, true);
         }
 
     }
 }
+
+$("#bold").click(function (e) {
+    if ($(this).hasClass("selected")) {
+        $(this).removeClass("selected");
+        $(".input-cell.selected").each(function (index, ele) {
+            $(ele).html(`${$(ele).text()}`);
+        });
+
+    } else {
+        $(this).addClass("selected");
+        $(".input-cell.selected").each(function (index, ele) {
+            $(ele).html(`<b>${$(ele).text()}</b>`);
+        });
+    }
+
+
+
+});
+
+$("#italic").click(function (e) {
+    if ($(this).hasClass("selected")) {
+        $(this).removeClass("selected");
+        $(".input-cell.selected").each(function (index, ele) {
+            $(ele).html(`${$(ele).text()}`);
+        });
+    } else {
+        $(this).addClass("selected");
+        $(".input-cell.selected").each(function (index, ele) {
+            $(ele).html(`<i>${$(ele).text()}</i>`);
+        });
+    }
+});
+
+
 
 
