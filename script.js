@@ -37,11 +37,28 @@ for (let j = 1; j <= 100; j++) {
     $("#rows").append(`<div class="row-name">${j}</div>`);
 }
 
+let cellData=[];
+
+
 for (let i = 1; i <= 100; i++) {
-    let row = $(`<div class="cell-row"></div>`)
+    let row = $(`<div class="cell-row"></div>`);
+    let rowArray=[];
     for (let j = 1; j <= 100; j++) {
-        row.append(`<div id="row-${i}-col-${j}" class="input-cell" contenteditable="false">`)
+        row.append(`<div id="row-${i}-col-${j}" class="input-cell" contenteditable="false">`);
+        rowArray.push({
+            "font-family":"Noto Sans",
+            "font-size":14,
+            "text":"",
+            "bold":false,
+            "italic":false,
+            "underlined":false,
+            "alignment":"left",
+            "color":"",
+            "bgcolor":""
+
+        })
     }
+    cellData.push(rowArray);
     $("#cells").append(row);
 }
 
@@ -144,8 +161,19 @@ function selectCell(ele, e, topCell, bottomCell, leftCell, rightCell, mouseSelec
         $(".input-cell.selected").removeClass("selected top-selected bottom-selected left-selected right-selected")
     }
     $(ele).addClass("selected");
+    changeHeader(findRowCol(ele));
 }
 
+function changeHeader([rowid,colId]){
+    let data=cellData[rowid-1][colId-1];
+    if(data.bold){
+        $("#bold").addClass("selected");
+
+    }else{
+        $("#bold").removeClass("selected");
+    }
+
+}
 let mousemoved = false;
 let startCellStored = false;
 let startCell;
@@ -188,37 +216,23 @@ function selectAllBetweenRange(start, end) {
     }
 }
 
-$("#bold").click(function (e) {
-    if ($(this).hasClass("selected")) {
-        $(this).removeClass("selected");
-        $(".input-cell.selected").each(function (index, ele) {
-            $(ele).html(`${$(ele).text()}`);
-        });
 
-    } else {
+$("#bold").click(function(e){
+    if($(this).hasClass("selected")){
+
+    }else{
         $(this).addClass("selected");
-        $(".input-cell.selected").each(function (index, ele) {
-            $(ele).html(`<b>${$(ele).text()}</b>`);
-        });
+        $(".input-cell.selected").css("font-weight","bold");
+        $(".input-cell.selected").each(function(index,data){
+            let [rowId,colId]=findRowCol(data);
+            cellData[rowId-1][colId-1].bold=true;
+        })
     }
+})
 
 
 
-});
 
-$("#italic").click(function (e) {
-    if ($(this).hasClass("selected")) {
-        $(this).removeClass("selected");
-        $(".input-cell.selected").each(function (index, ele) {
-            $(ele).html(`${$(ele).text()}`);
-        });
-    } else {
-        $(this).addClass("selected");
-        $(".input-cell.selected").each(function (index, ele) {
-            $(ele).html(`<i>${$(ele).text()}</i>`);
-        });
-    }
-});
 
 
 
