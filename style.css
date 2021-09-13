@@ -9,6 +9,8 @@ body {
 .container {
     height: 100vh;
     width: 100vw;
+    background-color: #fff;
+    color: #444;
 }
 .title-bar {
     height: 5vh;
@@ -221,4 +223,14 @@ body {
 
 .menu-icon.selected{
     background-color:lightgray;
+}
+#fill-color-icon{
+    border-bottom: 4px solid #fff;
+    padding-bottom: 2px;
+}
+
+#text-color-icon{
+    border-bottom: 4px solid #444;
+    padding-bottom: 2px;
+
 }

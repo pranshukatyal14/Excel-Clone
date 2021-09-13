@@ -53,8 +53,8 @@ for (let i = 1; i <= 100; i++) {
             "italic": false,
             "underlined": false,
             "alignment": "left",
-            "color": "",
-            "bgcolor": ""
+            "color": "#444",
+            "bgcolor": "#fff"
 
         })
     }
@@ -166,13 +166,16 @@ function selectCell(ele, e, topCell, bottomCell, leftCell, rightCell, mouseSelec
 
 function changeHeader([rowid, colId]) {
     let data = cellData[rowid - 1][colId - 1];
-    $($(".menu-selector")[0]).val(data["font-family"]);
-    $($(".menu-selector")[1]).val(data["font-size"]);
+    $("#font-family").val(data["font-family"]);
+     $("#font-family").css("font-family",data["font-family"]);
+    $("#font-size").val(data["font-size"]);
     $(".alignment.selected").removeClass("selected");
     $(`.alignment[data-type=${data.alignment}]`).addClass("selected");
     addRemoveSelectFromFontStyle(data, "bold");
     addRemoveSelectFromFontStyle(data, "italic");
     addRemoveSelectFromFontStyle(data, "underlined");
+    $("#fill-color-icon").css("border-bottom",`4px solid ${data.bgcolor}`);
+    $("#text-color-icon").css("border-bottom",`4px sold ${data.color}`);
 
 }
 function addRemoveSelectFromFontStyle(data, property) {
@@ -227,21 +230,21 @@ function selectAllBetweenRange(start, end) {
 
 $(".menu-selector").change(function(e){
    let value=$(this).val();
-   let key="";
-   
-   if(isNaN(value)){
-    key="font-family";
-   }else{
-    key="font-size";
-    value=parseInt(value);
+   let key=$(this).attr("id");
+   if(key=="font-family"){
+       $("#font-family").css(key,value);
    }
+   if(!isNaN(value)){
+       value=parseInt(value);
+   }
+   
    $(".input-cell.selected").css(key,value);
    $(".input-cell.selected").each(function(index,data){
        let [rowid,colId]=findRowCol(data);
        cellData[rowid-1][colId-1][key]=value;
-   })
+   });
 
-})
+});
 
 
 $(".alignment").click(function(e){
@@ -286,8 +289,37 @@ function setFontStyle(ele, property, key, value) {
     }
 }
 
+$(".color-pick").colorPick({
+    'initialColor': '#TYPECOLOR',
+    'allowRecent': true,
+    'recentMax': 5,
+    'allowCustomColor': true,
+    'palette': ["#1abc9c", "#16a085", "#2ecc71", "#27ae60", "#3498db", "#2980b9", "#9b59b6", "#8e44ad", "#34495e", "#2c3e50", "#f1c40f", "#f39c12", "#e67e22", "#d35400", "#e74c3c", "#c0392b", "#ecf0f1", "#bdc3c7", "#95a5a6", "#7f8c8d"],
+    'onColorSelected': function() {
+       if(this.color!="#TYPECOLOR"){
+           if(this.element.attr("id")=="fill-color"){
+                $("#fill-color-icon").css("border-bottom",`4px solid ${this}.color`);
+                $(".input-cell.selected").css("background-color",this.color);
+                $(".input-cell.selected").each((index,data)=>{
+                    let [rowId,colId]=findRowCol(data);
+                    cellData[rowId-1][colId-1].bgcolor=this.color;
+                })
+           }else{
+            $("#text-color-icon").css("border-bottom",`4px solid ${this}.color`);
+            $(".input-cell.selected").css("color",this.color);
+            $(".input-cell.selected").each((index,data)=>{
+                let [rowId,colId]=findRowCol(data);
+                cellData[rowId-1][colId-1].color=this.color;
+            });
 
+           }
+       }
+    }
+  });
 
-
-
+$("#fill-color-icon,#text-color-icon").click(function(e){
+    setTimeout(()=>{
+        $(this).parent().click();
+    },10);
+})
 
