@@ -11,6 +11,7 @@ body {
     width: 100vw;
     background-color: #fff;
     color: #444;
+    position: relative;
 }
 .title-bar {
     height: 5vh;
@@ -118,7 +119,7 @@ body {
 
 .data-container {
     display: flex;
-    height: 76vh;
+    height: 75vh;
     flex-wrap: wrap;
     flex-direction: row;
     width: 100vw;
@@ -142,23 +143,21 @@ body {
 #rows {
     
     width: 25px;
-    height: calc(76vh - 25px);
+    height: calc(75vh - 25px);
     border: 1px  solid lightgray;
     overflow: hidden;
 }
 
 #cells {
-    height: calc(76vh - 25px);
+    height: calc(75vh - 25px);
     width: calc(100vw - 25px);
     border:  1px solid lightgray;
     overflow: scroll;
     position: relative;
 }
 
-.sheet-bar {
-    height: 3vh;
-    width: 100vw;
-}
+
+
 .column-name{
     min-width: 100px;
     width: 100px;
@@ -233,4 +232,76 @@ body {
     border-bottom: 4px solid #444;
     padding-bottom: 2px;
 
+}
+.sheet-bar{
+    display: flex;
+    height: 4vh;
+    width: 100vw;   
+    align-items: center;
+}
+
+.sheet-scroller{
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+}
+.sheet-tab-container{
+    display: flex;
+    margin-right: 10px;
+    border-left: 0.5px solid lightgray;
+}
+.sheet-tab{
+    display: flex;
+    justify-content: center;
+   
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 3px;
+    border-right: 0.5px solid lightgray;
+    font-weight: 600;
+
+}
+.sheet-tab:hover{
+    background-color: lightgray;
+    cursor: pointer;
+    
+}
+.sheet-tab.selected{
+    color: #060a08;
+    border-bottom: 5px solid #217346;
+    outline: none;
+}
+
+.sheet-tab.selected:hover{
+    background-color: #fff;
+    cursor: default;
+}
+
+.add-sheet{
+    color: #217346;
+}
+.add-sheet:hover,.scroller:hover{
+    cursor: pointer;
+    transform: scale(1.2);
+}
+.scroller{
+    font-size: 30px;
+}
+.sheet-options-modal{
+    position: absolute;
+   
+    background-color:#fff ;
+    box-shadow: rgb(0 0 0 / 13%) 0px 6.4px 14.4px 0px, rgb(0 0 0 / 11%) 0px 1.2px 3.6px 0px;
+    
+    
+}
+.option{
+    padding: 7px 15px 7px 15px;
+    border-bottom: 0.5px solid lightgray;
+}
+.option:hover{
+    
+   
+    background-color: lightgray;
+    cursor:default;
 }

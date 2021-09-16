@@ -167,15 +167,15 @@ function selectCell(ele, e, topCell, bottomCell, leftCell, rightCell, mouseSelec
 function changeHeader([rowid, colId]) {
     let data = cellData[rowid - 1][colId - 1];
     $("#font-family").val(data["font-family"]);
-     $("#font-family").css("font-family",data["font-family"]);
+    $("#font-family").css("font-family", data["font-family"]);
     $("#font-size").val(data["font-size"]);
     $(".alignment.selected").removeClass("selected");
     $(`.alignment[data-type=${data.alignment}]`).addClass("selected");
     addRemoveSelectFromFontStyle(data, "bold");
     addRemoveSelectFromFontStyle(data, "italic");
     addRemoveSelectFromFontStyle(data, "underlined");
-    $("#fill-color-icon").css("border-bottom",`4px solid ${data.bgcolor}`);
-    $("#text-color-icon").css("border-bottom",`4px sold ${data.color}`);
+    $("#fill-color-icon").css("border-bottom", `4px solid ${data.bgcolor}`);
+    $("#text-color-icon").css("border-bottom", `4px sold ${data.color}`);
 
 }
 function addRemoveSelectFromFontStyle(data, property) {
@@ -228,33 +228,33 @@ function selectAllBetweenRange(start, end) {
     }
 }
 
-$(".menu-selector").change(function(e){
-   let value=$(this).val();
-   let key=$(this).attr("id");
-   if(key=="font-family"){
-       $("#font-family").css(key,value);
-   }
-   if(!isNaN(value)){
-       value=parseInt(value);
-   }
-   
-   $(".input-cell.selected").css(key,value);
-   $(".input-cell.selected").each(function(index,data){
-       let [rowid,colId]=findRowCol(data);
-       cellData[rowid-1][colId-1][key]=value;
-   });
+$(".menu-selector").change(function (e) {
+    let value = $(this).val();
+    let key = $(this).attr("id");
+    if (key == "font-family") {
+        $("#font-family").css(key, value);
+    }
+    if (!isNaN(value)) {
+        value = parseInt(value);
+    }
+
+    $(".input-cell.selected").css(key, value);
+    $(".input-cell.selected").each(function (index, data) {
+        let [rowid, colId] = findRowCol(data);
+        cellData[rowid - 1][colId - 1][key] = value;
+    });
 
 });
 
 
-$(".alignment").click(function(e){
+$(".alignment").click(function (e) {
     $(".alignment.selected").removeClass("selected");
     $(this).addClass("selected");
     let alignment = $(this).attr("data-type");
-    $(".input-cell.selected").css("text-align",alignment);
-    $(".input-cell.selected").each(function(index,data) {
-        let [rowId,colId] = findRowCol(data);
-        cellData[rowId-1][colId-1].alignment = alignment;
+    $(".input-cell.selected").css("text-align", alignment);
+    $(".input-cell.selected").each(function (index, data) {
+        let [rowId, colId] = findRowCol(data);
+        cellData[rowId - 1][colId - 1].alignment = alignment;
     });
 });
 
@@ -295,31 +295,71 @@ $(".color-pick").colorPick({
     'recentMax': 5,
     'allowCustomColor': true,
     'palette': ["#1abc9c", "#16a085", "#2ecc71", "#27ae60", "#3498db", "#2980b9", "#9b59b6", "#8e44ad", "#34495e", "#2c3e50", "#f1c40f", "#f39c12", "#e67e22", "#d35400", "#e74c3c", "#c0392b", "#ecf0f1", "#bdc3c7", "#95a5a6", "#7f8c8d"],
-    'onColorSelected': function() {
-       if(this.color!="#TYPECOLOR"){
-           if(this.element.attr("id")=="fill-color"){
-                $("#fill-color-icon").css("border-bottom",`4px solid ${this}.color`);
-                $(".input-cell.selected").css("background-color",this.color);
-                $(".input-cell.selected").each((index,data)=>{
-                    let [rowId,colId]=findRowCol(data);
-                    cellData[rowId-1][colId-1].bgcolor=this.color;
+    'onColorSelected': function () {
+        if (this.color != "#TYPECOLOR") {
+            if (this.element.attr("id") == "fill-color") {
+                $("#fill-color-icon").css("border-bottom", `4px solid ${this}.color`);
+                $(".input-cell.selected").css("background-color", this.color);
+                $(".input-cell.selected").each((index, data) => {
+                    let [rowId, colId] = findRowCol(data);
+                    cellData[rowId - 1][colId - 1].bgcolor = this.color;
                 })
-           }else{
-            $("#text-color-icon").css("border-bottom",`4px solid ${this}.color`);
-            $(".input-cell.selected").css("color",this.color);
-            $(".input-cell.selected").each((index,data)=>{
-                let [rowId,colId]=findRowCol(data);
-                cellData[rowId-1][colId-1].color=this.color;
-            });
+            } else {
+                $("#text-color-icon").css("border-bottom", `4px solid ${this}.color`);
+                $(".input-cell.selected").css("color", this.color);
+                $(".input-cell.selected").each((index, data) => {
+                    let [rowId, colId] = findRowCol(data);
+                    cellData[rowId - 1][colId - 1].color = this.color;
+                });
 
-           }
-       }
+            }
+        }
     }
-  });
+});
 
-$("#fill-color-icon,#text-color-icon").click(function(e){
-    setTimeout(()=>{
+$("#fill-color-icon,#text-color-icon").click(function (e) {
+    setTimeout(() => {
         $(this).parent().click();
-    },10);
+    }, 10);
+});
+
+$(".sheet-tab").bind("contextmenu", function (e) {
+    e.preventDefault();
+    selectSheet(this);
+
+    $(".sheey-options-modal").remove();
+    let modal = $(`<div class="sheet-options-modal">
+    <div class="option  sheet-rename">Rename</div>
+    <div class="option  sheet-delete">Delete</div>
+
+                </div>`);
+    $(".container").append(modal);
+    $(".sheet-options-modal").css({ "bottom": 0.04 * $(window).height(), "left": e.pageX });
+    $(".sheet-rename").click(function (e) {
+        $(".sheet-tab.selected").attr("contenteditable", "true");
+        $(".sheet-tab.selected").focus();
+    })
+});
+
+function selectSheet(ele) {
+    $(".sheet-tab.selected").removeClass("selected");
+    $(ele).addClass("selected");
+}
+
+$(".container").click(function (e) {
+
+
+    $(".sheet-options-modal").remove();
+
+});
+
+$(".sheet-tab").blur(function (e) {
+    $(".sheet-tab").attr("contenteditable", "false");
+
+});
+
+$(".sheet-tab").click(function (e) {
+    selectSheet(this);
 })
+
 
