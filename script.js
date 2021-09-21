@@ -349,35 +349,16 @@ $("#fill-color-icon,#text-color-icon").click(function (e) {
     }, 10);
 });
 
+addSheetTabEventListeners();
 
 
-
-
-$(".sheet-tab").bind("contextmenu", function (e) {
-    e.preventDefault();
-    selectSheet(this);
-
-    $(".sheet-options-modal").remove();
-    let modal = $(`<div class="sheet-options-modal">
-    <div class="option  sheet-rename">Rename</div>
-    <div class="option  sheet-delete">Delete</div>
-
-                </div>`);
-    $(".container").append(modal);
-    $(".sheet-options-modal").css({ "bottom": 0.04 * $(window).height(), "left": e.pageX });
-    $(".sheet-rename").click(function (e) {
-       
-    })
-});
-
-
-$(".sheet-tab").click(function (e) {
+/*$(".sheet-tab").click(function (e) {
     if(!$(this).hasClass("selected")){
         
         selectSheet(this);
     }
 });
-
+*/
 $(".container").click(function (e) {
     $(".sheet-options-modal").remove();
 
@@ -424,8 +405,14 @@ $(".add-sheet").click(function(e){
     $(".sheet-tab-container").append(
         `<div class="sheet-tab selected">Sheet${totalSheets}</div>`
     );
+    addSheetTabEventListeners();
 
+   
+});
+
+function addSheetTabEventListeners(){
     
+ 
     $(".sheet-tab.selected").bind("contextmenu",function(e){
         e.preventDefault();
        
@@ -449,4 +436,5 @@ $(".add-sheet").click(function(e){
         }
     });
 
-});
+
+}
