@@ -397,3 +397,17 @@ body {
     margin-right: 5px;
 }
 
+.loader-parent{
+    background-color:rgb(255, 255, 255,0.5);
+    flex-direction: column;
+}
+
+.loading{
+    color: #217346;
+    font-size: 30px;
+}
+.error{
+    color: red;
+    font-size: 14px;
+}
+
