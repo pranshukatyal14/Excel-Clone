@@ -84,7 +84,23 @@ addEventsToCells();
 addSheetTabEventListeners();
 }
 loadNewSheet();
-
+/*
+function addNewsheet(){
+    $(".input-cell").text("");
+    $(".input-cell").css({
+        "font-family": "Noto Sans",
+        "font-size": 14,
+        "text": "",
+        "bold": false,
+        "italic": false,
+        "underlined": false,
+        "alignment": "left",
+        "color": "#444",
+        "background-color": "#fff"
+    });
+    addSheetTabEventListeners();
+}
+*/
 function addEventsToCells(){
    
     $(".input-cell").dblclick(function () {
@@ -428,10 +444,11 @@ $(".add-sheet").click(function(e){
     $(".sheet-tab-container").append(
         `<div class="sheet-tab selected">Sheet${lastlyAddedSheetNumber}</div>`
     );
-
+    $(".sheet-tab.selected")[0].scrollIntoView();
     setTimeout(()=>{
 
-        loadNewSheet();
+       
+        loadNewSheet()
         removeLoader();
     })
    
@@ -516,20 +533,20 @@ function addSheetTabEventListeners(){
                 delete cellData[selectedSheet];
                 if(selectedSheetIndex==0){
 
-                    currentSelectedSheet.next().addClass("selected");
+                    selectSheet(currentSelectedSheet.next()[0]);
                     currentSelectedSheet.remove();
                     
-                    selectedSheet=keysArray[1];
+                   
                 }else{
                     let currentSelectedSheet=$(".sheet-tab.selected");
 
-                    currentSelectedSheet.prev().addClass("selected");
+                    selectSheet(currentSelectedSheet.prev()[0]);
                     currentSelectedSheet.remove();
                   
-                    selectedSheet=keysArray[selectedSheetIndex-1];
+                    
                    
-                }
-                selectedSheet($(".sheet-tab.selected")[0]);
+                }  
+                selectSheet($(".sheet-tab.selected")[0]);
                 totalSheets--;
             }
         })
@@ -565,3 +582,21 @@ function renameSheet(){
     }
 
 }
+$(".left-scroller").click(function(e){
+    let keysArray=Object.keys(cellData);
+    let selectedSheetIndex=keysArray.indexOf(selectedSheet);
+    if(selectedSheetIndex!=0){
+      selectSheet($(".sheet-tab.selected").prev()[0]);
+     }
+     $(".sheet-tab.selected")[0].scrollIntoView();
+})
+
+$(".right-scroller").click(function(e){
+    let keysArray=Object.keys(cellData);
+    let selectedSheetIndex=keysArray.indexOf(selectedSheet);
+    if(selectedSheetIndex!=(keysArray.length-1)){
+      selectSheet($(".sheet-tab.selected").next()[0]);
+     }
+     $(".sheet-tab.selected")[0].scrollIntoView();
+})
+
