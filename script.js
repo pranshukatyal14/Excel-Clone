@@ -266,7 +266,7 @@ function addRemoveSelectFromFontStyle(data, property) {
     }
 
 }
-
+ 
 
 
 function selectAllBetweenRange(start, end) {
@@ -516,6 +516,7 @@ $(".add-sheet").click(function (e) {
     $(".sheet-tab.selected")[0].scrollIntoView();
 
     addSheetTabEventListeners();
+    $("#row-1-col-1").click();
 
 
 });
@@ -619,6 +620,7 @@ function addSheetTabEventListeners() {
     $(".sheet-tab.selected").click(function (e) {
         if (!$(this).hasClass("selected")) {
             selectSheet(this);
+            $("#row-1-col-1").click();
         }
     });
 }
